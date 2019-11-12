@@ -15,6 +15,7 @@
 #include <Ultralight/Defines.h>
 #include <memory.h>
 #include <cmath>
+#include <cstring>
 #include <algorithm>
 
 namespace ultralight {

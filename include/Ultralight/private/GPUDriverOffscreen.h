@@ -3,9 +3,12 @@
 #include <memory>
 #include <functional>
 
+typedef struct GLFWwindow GLFWwindow;
+
 namespace ultralight {
 
-class GPUDriverOffscreenImpl;
+class GPUContextGL;
+class GPUDriverGL;
 
 class UExport GPUDriverOffscreen : public GPUDriver {
  public:
@@ -54,9 +57,10 @@ class UExport GPUDriverOffscreen : public GPUDriver {
   virtual void DrawCommandList() override;
 
  protected:
-   virtual GPUDriverOffscreenImpl* Impl();
+   virtual GPUDriverGL* driver();
 
-   std::unique_ptr<GPUDriverOffscreenImpl> impl_;
+   GLFWwindow* window_;
+   std::unique_ptr<GPUContextGL> context_;
 };
 
 }  // namespace ultralight 

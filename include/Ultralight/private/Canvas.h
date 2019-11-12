@@ -18,7 +18,7 @@ class RenderTexture;
 
 struct UExport Glyph {
   uint32_t index;
-  Point origin;
+  float origin_x;
 };
 
 /**
@@ -36,8 +36,11 @@ public:
   static Ref<Canvas> CreateRecorder(int width, int height, BitmapFormat format);
 
   virtual bool IsRecorder() const = 0;
-  virtual void Replay(Canvas* canvas) const = 0;
-  virtual void ClearCommands() = 0;
+  virtual void Replay(Canvas* canvas) = 0;
+
+  virtual void Clear() = 0;
+
+  virtual void RecycleRenderTexture() = 0;
 
   virtual int width() const = 0;
   virtual int height() const = 0;
@@ -72,8 +75,16 @@ public:
   virtual void BeginMaskLayer(RefPtr<Path> path) = 0;
   virtual void EndMaskLayer() = 0;
 
-  virtual void Clear() = 0;
-  virtual void Clear(const Rect& rect) = 0;
+  // Whether or not blending is enabled, default is true.
+  virtual void set_blending_enabled(bool val) = 0;
+  virtual bool blending_enabled() const = 0;
+
+  // Whether or not scissor test is enabled, default is false.
+  virtual void set_scissor_enabled(bool val) = 0;
+  virtual bool scissor_enabled() const = 0;
+
+  virtual void SetScissorRect(const Rect& rect) = 0;
+  virtual Rect GetScissorRect() = 0;
 
   virtual RenderTarget render_target() const = 0;
   virtual RefPtr<RenderTexture> render_texture() const = 0;
@@ -86,13 +97,13 @@ public:
     float stroke_width, Color stroke_color) = 0;
   virtual void DrawBoxShadow(const Rect& paint_rect, const RoundedRect& rrect, const RoundedRect& clip_rrect,
     bool inset, const Point& offset, float radius, const Paint& paint) = 0;
-  virtual void DrawPath(Ref<Path> path, const Paint& paint, bool should_fill, bool should_stroke,
-    float stroke_width) = 0;
+  virtual void FillPath(Ref<Path> path, const Paint& paint) = 0;
+  virtual void StrokePath(Ref<Path> path, const Paint& paint, float stroke_width) = 0;
   virtual void DrawImage(RefPtr<Image> image, uint32_t cur_frame,
     const Rect& src, const Rect& dest, const Paint& paint) = 0;
   virtual void DrawPattern(RefPtr<Image> image, uint32_t cur_frame,
     const Rect& src, const Rect& dest, const Matrix& transform) = 0;
-  virtual void DrawGlyphs(Ref<Font> font, const Paint& paint, Glyph* glyphs, size_t num_glyphs, float glyph_scale, bool fake_blur, const Point& offset) = 0;
+  virtual void DrawGlyphs(Ref<Font> font, const Paint& paint, float origin_y, Glyph* glyphs, size_t num_glyphs, const Point& offset) = 0;
   virtual void DrawGradient(Gradient* gradient, const Rect& dest) = 0;
 
   // this method forms a draw dependency between 'canvas' and this Surface's parent canvas.

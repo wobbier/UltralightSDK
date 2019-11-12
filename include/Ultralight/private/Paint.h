@@ -4,7 +4,7 @@
 
 namespace ultralight {
 
-// 32-bit RGBA, Not Premultiplied
+// 32-bit RGBA, RGB is in sRGB gamma-space, Alpha is linear, not premultiplied
 typedef uint32_t Color;
 
 #define UltralightRGBA(r, g, b, a) \
@@ -42,9 +42,43 @@ typedef uint32_t Color;
 #define UltralightColorBLUE         0x0000FFFF
 #define UltralightColorYELLOW       0xFFFF00FF
 
+inline Color MakeColorAlpha(float alpha) {
+  return UltralightRGBA(255, 255, 255, 255 * alpha);
+}
+
+inline float SRGBToLinear(float val) {
+  return (val <= 0.04045f) ? val / 12.92f : powf((val + 0.055f) / 1.055f, 2.4f);
+}
+
+inline float LinearToSRGB(float val) {
+  return (val <= 0.0031308f) ? val * 12.92f : (1.055f * pow(val, 1.0f / 2.4f) - 0.055f);
+}
+
+// Convert un-premultiplied sRGB color to premultiplied linear color
+inline vec4 ToPremultipliedLinear(Color input) {
+  // Step 1: Convert RGB channels from sRGB to linear space.
+  // Step 2: Premultiply alpha with RGB channels.
+  
+  vec4 col = UltralightColorGetFloat4(input);
+  col.x = SRGBToLinear(col.x) * col.w;
+  col.y = SRGBToLinear(col.y) * col.w;
+  col.z = SRGBToLinear(col.z) * col.w;
+
+  return col;
+}
+
+inline Color ToSRGB(vec4 col) {
+  col.x = LinearToSRGB(col.x);
+  col.y = LinearToSRGB(col.y);
+  col.z = LinearToSRGB(col.z);
+  col *= 255.0f;
+
+  return UltralightRGBA(col.x, col.y, col.z, col.w);
+}
+
 struct UExport GradientStop {
   float stop;
-  float color[4];
+  Color color;
 };
 
 struct UExport Gradient {
@@ -101,6 +135,113 @@ enum BlendMode {
   kBlendMode_PlusDarker,
   kBlendMode_PlusLighter
 };
+
+// Combined blend op used in shader code, matches Cairo operators
+enum BlendOp {
+  kBlendOp_Clear = 0,
+  kBlendOp_Source,
+  kBlendOp_Over,
+  kBlendOp_In,
+  kBlendOp_Out,
+  kBlendOp_Atop,
+  kBlendOp_DestOver,
+  kBlendOp_DestIn,
+  kBlendOp_DestOut,
+  kBlendOp_DestAtop,
+  kBlendOp_XOR,
+  kBlendOp_Darken,
+  kBlendOp_Add,
+  kBlendOp_Difference,
+  kBlendOp_Multiply,
+  kBlendOp_Screen,
+  kBlendOp_Overlay,
+  kBlendOp_Lighten,
+  kBlendOp_ColorDodge,
+  kBlendOp_ColorBurn,
+  kBlendOp_HardLight,
+  kBlendOp_SoftLight,
+  kBlendOp_Exclusion,
+  kBlendOp_Hue,
+  kBlendOp_Saturation,
+  kBlendOp_Color,
+  kBlendOp_Luminosity
+};
+
+inline BlendOp CompositeOpToBlendOp(CompositeOp op)
+{
+  switch (op) {
+  case kCompositeOp_Clear:
+    return kBlendOp_Clear;
+  case kCompositeOp_Copy:
+    return kBlendOp_Source;
+  case kCompositeOp_SourceOver:
+    return kBlendOp_Over;
+  case kCompositeOp_SourceIn:
+    return kBlendOp_In;
+  case kCompositeOp_SourceOut:
+    return kBlendOp_Out;
+  case kCompositeOp_SourceAtop:
+    return kBlendOp_Atop;
+  case kCompositeOp_DestinationOver:
+    return kBlendOp_DestOver;
+  case kCompositeOp_DestinationIn:
+    return kBlendOp_DestIn;
+  case kCompositeOp_DestinationOut:
+    return kBlendOp_DestOut;
+  case kCompositeOp_DestinationAtop:
+    return kBlendOp_DestAtop;
+  case kCompositeOp_XOR:
+    return kBlendOp_XOR;
+  case kCompositeOp_PlusDarker:
+    return kBlendOp_Darken;
+  case kCompositeOp_PlusLighter:
+    return kBlendOp_Add;
+  case kCompositeOp_Difference:
+    return kBlendOp_Difference;
+  default:
+    return kBlendOp_Source;
+  }
+}
+
+inline BlendOp ToBlendOp(CompositeOp op, BlendMode mode)
+{
+  switch (mode) {
+  case kBlendMode_Normal:
+    return CompositeOpToBlendOp(op);
+  case kBlendMode_Multiply:
+    return kBlendOp_Multiply;
+  case kBlendMode_Screen:
+    return kBlendOp_Screen;
+  case kBlendMode_Overlay:
+    return kBlendOp_Overlay;
+  case kBlendMode_Darken:
+    return kBlendOp_Darken;
+  case kBlendMode_Lighten:
+    return kBlendOp_Lighten;
+  case kBlendMode_ColorDodge:
+    return kBlendOp_ColorDodge;
+  case kBlendMode_ColorBurn:
+    return kBlendOp_ColorBurn;
+  case kBlendMode_HardLight:
+    return kBlendOp_HardLight;
+  case kBlendMode_SoftLight:
+    return kBlendOp_SoftLight;
+  case kBlendMode_Difference:
+    return kBlendOp_Difference;
+  case kBlendMode_Exclusion:
+    return kBlendOp_Exclusion;
+  case kBlendMode_Hue:
+    return kBlendOp_Hue;
+  case kBlendMode_Saturation:
+    return kBlendOp_Saturation;
+  case kBlendMode_Color:
+    return kBlendOp_Color;
+  case kBlendMode_Luminosity:
+    return kBlendOp_Luminosity;
+  default:
+    return kBlendOp_Over;
+  }
+}
 
 struct UExport Paint {
   Color color;

@@ -12,7 +12,7 @@ public:
 
   static FontCache* instance();
 
-  virtual RefPtr<Font> GetFont(uint64_t font_id, bool is_distance_field, float size);
+  virtual RefPtr<Font> GetFont(uint64_t font_id, bool is_distance_field, float size, float scale);
 
   // inherited from Cache
 

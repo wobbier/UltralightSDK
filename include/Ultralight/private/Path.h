@@ -25,6 +25,7 @@ public:
   virtual void SetWithTransform(Ref<Path> path, const Matrix& transform) = 0;
   virtual void Clear() = 0;
   virtual bool empty() const = 0;
+  virtual bool has_current_point() const = 0;
   virtual Point current_point() const = 0;
   virtual Rect aabb() const = 0;
 
