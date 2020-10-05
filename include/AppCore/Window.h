@@ -58,7 +58,7 @@ enum WindowFlags : uint8_t {
 ///
 /// Window class, represents a platform window.
 ///
-class AExport Window : public RefCounted {
+class Window : public RefCounted {
 public:
   ///
   /// Create a new Window.
@@ -148,7 +148,7 @@ public:
   virtual void* native_handle() const = 0;
 
 protected:
-  virtual ~Window();
+	virtual ~Window() {}
   virtual OverlayManager* overlay_manager() const = 0;
 
   friend class OverlayImpl;

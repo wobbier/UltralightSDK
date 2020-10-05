@@ -23,7 +23,7 @@ namespace ultralight {
 /// @note  Each Overlay is essentially a View and an on-screen quad. You should
 ///        create the Overlay then load content into the underlying View.
 ///
-class AExport Overlay : public RefCounted {
+class Overlay : public RefCounted {
 public:
   ///
   /// Create a new Overlay.

@@ -18,18 +18,18 @@ namespace ultralight {
 /// **Note**:
 ///    You MUST set a JSContext before using most of the C++ API below.
 ///
-void AExport SetJSContext(JSContextRef ctx);
+void SetJSContext(JSContextRef ctx);
 
 ///
 /// Get the current JSContext.
 ///
-JSContextRef AExport GetJSContext();
+JSContextRef GetJSContext();
 
 ///
 /// JavaScript String wrapper that automatically manages JSStringRef lifetime
 /// and provides helpful conversions.
 ///
-class AExport JSString {
+class JSString {
 public:
   /// Create empty string
   JSString();
@@ -67,16 +67,16 @@ class JSObject;
 class JSFunction;
 
 /// Tag type used with the JSValue constructor to create "Null" types
-struct AExport JSValueNullTag {};
+struct JSValueNullTag {};
 
 /// Tag type used with the JSValue constructor to create "Undefined" types
-struct AExport JSValueUndefinedTag {};
+struct JSValueUndefinedTag {};
 
 ///
 /// JavaScript variant value wrapper that automatically manages JSValueRef 
 /// lifetime and provides helpful conversions.
 ///
-class AExport JSValue {
+class JSValue {
 public:
   /// Create null (empty) JSValue
   JSValue();
@@ -232,7 +232,7 @@ protected:
 /// 
 /// A vector of JSValues, used for passing around arguments in JSCallback.
 /// 
-class AExport JSArgs {
+class JSArgs {
 public:
   /// Create an empty list of JavaScript arguments
   JSArgs();
@@ -318,7 +318,7 @@ typedef std::function<JSValue(const JSObject&, const JSArgs&)> JSCallbackWithRet
 /// **Note**: Expected to run from within an instance of 'MyClass', note the
 ///           'this' keyword in the macro.
 ///
-#define BindJSCallback(fn) (JSCallback)std::bind(fn, this, std::placeholders::_1, std::placeholders::_2)
+#define BindJSCallback(fn) (ultralight::JSCallback)std::bind(fn, this, std::placeholders::_1, std::placeholders::_2)
 
 ///
 /// Macro to help bind C++ member functions to a JSCallbackWithRetval
@@ -335,7 +335,7 @@ typedef std::function<JSValue(const JSObject&, const JSArgs&)> JSCallbackWithRet
 /// to object property, binding C++ callbacks to object properties via function objects,
 /// as well as value query via the JSValue interface.
 /// 
-class AExport JSPropertyValue : public JSValue {
+class JSPropertyValue : public JSValue {
 public:
   virtual ~JSPropertyValue();
 
@@ -367,7 +367,7 @@ protected:
 /// JSArray wrapper that automatically manages lifetime and provides
 /// convenient access to indices and Array functions.
 /// 
-class AExport JSArray {
+class JSArray {
 public:
   /// Create empty Array
   JSArray();
@@ -430,7 +430,7 @@ protected:
 /// JSObject wrapper that automatically manages lifetime and provides
 /// convenient access to properties.
 /// 
-class AExport JSObject {
+class JSObject {
 public:
   /// Create empty Object
   JSObject();
@@ -489,7 +489,7 @@ protected:
 /// JSFunction wrapper that automatically manages lifetime and provides
 /// convenient function invocation operators.
 ///
-class AExport JSFunction {
+class JSFunction {
 public:
   /// Create an empty Function.
   /// NOTE: It is OKAY to create this without calling SetJSContext() first.
@@ -544,11 +544,11 @@ protected:
 /// Get the Global Object for the current JSContext.
 /// In JavaScript, this would be equivalent to the "window" object.
 ///
-JSObject AExport JSGlobalObject();
+JSObject JSGlobalObject();
 
 ///
 /// Evaluate a string of JavaScript and return a result.
 /// 
-JSValue AExport JSEval(const JSString& str);
+JSValue JSEval(const JSString& str);
 
 }  // namespace ultralight
