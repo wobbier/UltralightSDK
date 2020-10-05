@@ -18,7 +18,8 @@
 namespace ultralight {
 
 ///
-/// The winding order for front-facing triangles.
+/// The winding order for front-facing triangles. (This is only used when the
+/// GPU renderer is enabled)
 ///
 /// @note  In most 3D engines, there is the concept that triangles have a
 ///        a "front" and a "back". All the front-facing triangles (eg, those
@@ -81,14 +82,28 @@ struct UExport Config {
   String16 cache_path;
 
   ///
+  /// When enabled, each View will be rendered to an offscreen GPU texture
+  /// using the GPU driver set in Platform::set_gpu_driver. You can fetch
+  /// details for the texture via View::render_target.
+  ///
+  /// When disabled (the default), each View will be rendered to an offscreen
+  /// pixel buffer. This pixel buffer can optionally be provided by the user--
+  /// for more info see <Ultralight/platform/Surface.h> and View::surface.
+  ///
+  bool use_gpu_renderer = false;
+
+  ///
   /// The amount that the application DPI has been scaled (200% = 2.0).
-  /// Used for scaling device coordinates to pixels and oversampling raster
-  /// shapes.
+  /// This should match the device scale set for the current monitor.
+  ///
+  /// Note: Device scales are rounded to nearest 1/8th (eg, 0.125).
   ///
   double device_scale = 1.0;
 
   ///
   /// The winding order for front-facing triangles. @see FaceWinding
+  ///
+  /// Note: This is only used when the GPU renderer is enabled.
   ///
   FaceWinding face_winding = kFaceWinding_CounterClockwise;
 
@@ -156,9 +171,15 @@ struct UExport Config {
 
   ///
   /// When a CSS animation is active, the amount of time (in seconds) to wait
-  /// before triggering another repaint.
+  /// before triggering another repaint. Default is 60 Hz.
   ///
   double animation_timer_delay = 1.0 / 60.0;
+
+  ///
+  /// When a smooth scroll animation is active, the amount of time (in seconds)
+  /// to wait before triggering another repaint. Default is 60 Hz.
+  ///
+  double scroll_timer_delay = 1.0 / 60.0;
 
   ///
   /// The amount of time (in seconds) to wait before running the recycler (will

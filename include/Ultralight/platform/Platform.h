@@ -22,6 +22,7 @@ class GPUDriver;
 class FontLoader;
 class FileSystem;
 class Clipboard;
+class SurfaceFactory;
 
 ///
 /// @brief  Platform singleton to configure Ultralight and provide user-defined
@@ -104,8 +105,8 @@ class UExport Platform {
   ///
   /// Set the Clipboard (will be used for all clipboard operations)
   ///
-  /// @param  file_system  A user-defined Clipboard implementation, ownership
-  ///                      remains with the caller.
+  /// @param  clipboard  A user-defined Clipboard implementation, ownership
+  ///                    remains with the caller.
   ///
   virtual void set_clipboard(Clipboard* clipboard) = 0;
 
@@ -113,6 +114,28 @@ class UExport Platform {
   /// Get the Clipboard
   ///
   virtual Clipboard* clipboard() const = 0;
+
+  ///
+  /// Set the SurfaceFactory
+  ///
+  /// This can be used to provide a platform-specific bitmap surface for View
+  /// to paint into when the CPU renderer is enabled. See View::surface().
+  ///
+  /// @param  surface_factory  A user-defined SurfaceFactory implementation,
+  ///                          ownership remains with the caller.
+  ///
+  /// @note  A default BitmapSurfaceFactory is defined if you never call this,
+  ///        View::surface() can be safely cast to BitmapSurface.
+  ///
+  virtual void set_surface_factory(SurfaceFactory* surface_factory) = 0;
+
+  ///
+  /// Get the SurfaceFactory
+  ///
+  /// @note  A default BitmapSurfaceFactory is set by default, View::surface()
+  ///        can be safely cast to BitmapSurface if you don't define your own.
+  ///
+  virtual SurfaceFactory* surface_factory() const = 0;
 };
 
 }  // namespace ultralight
