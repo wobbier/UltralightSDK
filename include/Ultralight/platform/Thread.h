@@ -26,7 +26,7 @@ typedef uint64_t ThreadHandle;
 typedef void (*ThreadEntryPoint)(void*);
 
 // The type of thread, you can choose to optionally handle these for better performance
-enum class UExport ThreadType : uint8_t {
+enum class ThreadType : uint8_t {
   Unknown = 0,
   JavaScript,
   Compiler,

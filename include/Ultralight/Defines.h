@@ -55,13 +55,25 @@
 #  define _thread_local __thread
 #endif
 
+#ifndef UL_COMPILER_GCC_LIKE
+#  define UL_COMPILER_GCC_LIKE (defined(__clang__) || defined(__GNUC__) || defined(__GNUG__))
+#endif
+
 #ifndef UL_ALWAYS_INLINE
-#  if (defined(__clang__) || defined(__GNUC__) || defined(__GNUG__)) && defined(NDEBUG)
+#if defined(UL_COMPILER_GCC_LIKE) && defined(NDEBUG)
 #    define UL_ALWAYS_INLINE inline __attribute__((__always_inline__))
 #  elif defined(_MSC_VER) && defined(NDEBUG)
 #    define UL_ALWAYS_INLINE __forceinline
 #  else
 #    define UL_ALWAYS_INLINE inline
+#  endif
+#endif
+
+#ifndef UL_UNLIKELY
+#  if defined(UL_COMPILER_GCC_LIKE)
+#    define UL_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#  else
+#    define UL_UNLIKELY(x) (x)
 #  endif
 #endif
 

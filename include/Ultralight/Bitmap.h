@@ -16,7 +16,7 @@ namespace ultralight {
 ///
 /// The various Bitmap formats.
 ///
-enum class UExport BitmapFormat : uint8_t {
+enum class BitmapFormat : uint8_t {
   ///
   /// Alpha channel only, 8-bits per pixel.
   ///

@@ -3,10 +3,11 @@
  *                                                                            *
  *  See <https://ultralig.ht> for licensing and more.                         *
  *                                                                            *
- *  (C) 2023 Ultralight, Inc.                                                 *
+ *  (C) 2024 Ultralight, Inc.                                                 *
  *****************************************************************************/
 #pragma once
 #include <Ultralight/Defines.h>
+#include <Ultralight/String.h>
 #include <JavaScriptCore/JavaScript.h>
 
 namespace ultralight {
@@ -25,10 +26,13 @@ enum MessageSource {
   kMessageSource_CSS,
   kMessageSource_Security,
   kMessageSource_ContentBlocker,
-  kMessageSource_Other,
   kMessageSource_Media,
-  kMessageSource_WebRTC,
   kMessageSource_MediaSource,
+  kMessageSource_WebRTC,
+  kMessageSource_ITPDebug,
+  kMessageSource_PrivateClickMeasurement,
+  kMessageSource_PaymentRequest,
+  kMessageSource_Other,
 };
 
 enum MessageType {
@@ -52,11 +56,11 @@ enum MessageType {
 /// MessageLevel types
 ///
 enum MessageLevel {
-  kMessageLevel_Log = 1,
-  kMessageLevel_Warning = 2,
-  kMessageLevel_Error = 3,
-  kMessageLevel_Debug = 4,
-  kMessageLevel_Info = 5,
+  kMessageLevel_Log = 0,
+  kMessageLevel_Warning,
+  kMessageLevel_Error,
+  kMessageLevel_Debug,
+  kMessageLevel_Info,
 };
 
 ///
